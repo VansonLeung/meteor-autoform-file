@@ -12,6 +12,17 @@ getDocument = (context) ->
   id = Template.instance()?.value?.get?()
   collection?.findOne(id)
 
+getHidden = () ->
+  t = Template.instance()
+  t.hidden_dom
+  
+triggerHiddenChange = () ->
+  setTimeout ( ->
+    hidden_dom = getHidden()
+    if hidden_dom
+      hidden_dom.trigger('change')
+  ), 100
+
 Template.afFileUpload.onCreated ->
   self = @
   @value = new ReactiveVar @data.value
@@ -22,6 +33,7 @@ Template.afFileUpload.onCreated ->
       t = Template.instance()
       if t.value.get() isnt false and t.value.get() isnt ctx.value and ctx.value?.length > 0
         t.value.set ctx.value
+        triggerHiddenChange()
         @_stopInterceptValue = true
 
   @_insert = (file) ->
@@ -41,6 +53,7 @@ Template.afFileUpload.onCreated ->
 
       if err then return console.log err
       self.value.set fileObj._id
+      triggerHiddenChange()
 
   @autorun ->
     _id = self.value.get()
@@ -48,8 +61,10 @@ Template.afFileUpload.onCreated ->
 
 Template.afFileUpload.onRendered ->
   self = @
+  self.hidden_dom = $(self).find('input[type=hidden]')
   $(self.firstNode).closest('form').on 'reset', ->
     self.value.set false
+    triggerHiddenChange()
 
 Template.afFileUpload.helpers
   label: ->
@@ -96,6 +111,7 @@ Template.afFileUpload.events
   'click .js-af-remove-file': (e, t) ->
     e.preventDefault()
     t.value.set false
+    triggerHiddenChange()
 
   'fileuploadchange .js-file': (e, t, data) ->
     t._insert new FS.File data.files[0]

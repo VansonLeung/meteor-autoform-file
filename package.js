@@ -2,7 +2,7 @@ Package.describe({
   name: "vansonhk:autoform-file",
   summary: "File upload for AutoForm",
   description: "File upload for AutoForm",
-  version: "0.4.7",
+  version: "0.4.8",
   git: "https://github.com/VansonLeung/autoform-file.git"
 });
 
